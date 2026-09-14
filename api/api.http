@@ -1,6 +1,17 @@
 @api_HostAddress = http://localhost:5274
 
-GET {{api_HostAddress}}/weatherforecast/
+### Create a purchase
+POST {{api_HostAddress}}/purchases/
+Content-Type: application/json
+
+{
+  "description": "Office chair",
+  "transactionDate": "2026-06-15",
+  "amount": 123.456
+}
+
+### Retrieve a purchase converted to Canadian dollars
+GET {{api_HostAddress}}/purchases/00000000-0000-0000-0000-000000000000?countryCurrency=Canada-Dollar
 Accept: application/json
 
 ###
