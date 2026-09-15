@@ -19,6 +19,9 @@ builder.Services.AddHttpClient<IExchangeRateService, TreasuryExchangeRateService
 
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
+builder.Services.AddCors(options => options.AddPolicy("UiDev", policy =>
+    policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("UiDev");
 
 app.MapPurchaseEndpoints();
 
