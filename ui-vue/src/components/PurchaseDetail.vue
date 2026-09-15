@@ -50,16 +50,19 @@ function formatDecimal(value: number) {
   <div>
     <v-card variant="flat">
       <v-card-text>
-        <v-text-field
-          v-model="countryCurrency"
-          list="country-currency-suggestions"
-          label="Country-Currency"
-          hint='Treasury API format, e.g. "Canada-Dollar"'
-          persistent-hint
-        ></v-text-field>
-        <datalist id="country-currency-suggestions">
-          <option v-for="item in countryCurrencySuggestions" :key="item" :value="item"></option>
-        </datalist>
+        <div class="d-flex justify-center">
+          <v-tooltip interactive>
+            <template v-slot:activator="{ props: activatorProps }">
+              <v-text-field v-model="countryCurrency" v-bind="activatorProps" label="What Country-Currency would you like to see?"
+                hint='Treasury API format, e.g. "Canada-Dollar"' persistent-hint variant="outlined">
+              </v-text-field>
+            </template>
+            <div class="suggestion-tooltip">
+                  <div class="suggestion-tooltip-title">Examples</div>
+                  <div v-for="item in countryCurrencySuggestions" :key="item">{{ item }}</div>
+                </div>
+          </v-tooltip>
+        </div>
         <v-alert v-if="error" type="error" density="compact" class="mt-2">
           {{ error }}
         </v-alert>
@@ -96,6 +99,12 @@ function formatDecimal(value: number) {
 </template>
 
 <style scoped>
+
+.suggestion-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -109,4 +118,5 @@ function formatDecimal(value: number) {
 .detail-grid dd {
   margin: 0;
 }
+
 </style>
