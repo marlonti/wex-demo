@@ -1,0 +1,99 @@
+@inject PurchasesApiClient ApiClient
+
+@if (_isOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Purchase Details</h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">What Country-Currency would you like to see?</label>
+                    <input class="form-control" @bind="_countryCurrency" @bind:event="oninput" placeholder="e.g. Canada-Dollar" />
+                    <div class="form-text">
+                        Treasury API format, e.g. "Canada-Dollar". Examples:
+                        Canada-Dollar, United Kingdom-Pound, Euro Zone-Euro, Japan-Yen, Mexico-Peso, Australia-Dollar
+                    </div>
+
+                    @if (_error is not null)
+                    {
+                        <div class="alert alert-danger py-2 mt-2 mb-0">@_error</div>
+                    }
+
+                    @if (_result is { } r)
+                    {
+                        <dl class="row mt-3 mb-0">
+                            <dt class="col-5">Id</dt><dd class="col-7">@r.Id</dd>
+                            <dt class="col-5">Description</dt><dd class="col-7">@r.Description</dd>
+                            <dt class="col-5">Transaction Date</dt><dd class="col-7">@r.TransactionDate.ToString("yyyy-MM-dd")</dd>
+                            <dt class="col-5">Original Amount (USD)</dt><dd class="col-7">@r.OriginalAmountUsd.ToString("C")</dd>
+                            <dt class="col-5">Exchange Rate</dt><dd class="col-7">@r.ExchangeRate</dd>
+                            <dt class="col-5">Converted Amount</dt><dd class="col-7">@r.ConvertedAmount.ToString("F2") @r.Currency</dd>
+                            <dt class="col-5">Country</dt><dd class="col-7">@r.Country</dd>
+                            <dt class="col-5">Rate Date</dt><dd class="col-7">@r.RateDate.ToString("yyyy-MM-dd")</dd>
+                        </dl>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="Close">Close</button>
+                    <button type="button" class="btn btn-primary" disabled="@_loading" @onclick="ConvertAsync">
+                        @if (_loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                        Convert
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Guid _purchaseId;
+    private string _countryCurrency = string.Empty;
+    private bool _isOpen;
+    private bool _loading;
+    private string? _error;
+    private PurchaseConversionResponse? _result;
+
+    public void Show(Guid purchaseId)
+    {
+        _purchaseId = purchaseId;
+        _countryCurrency = string.Empty;
+        _error = null;
+        _result = null;
+        _isOpen = true;
+        StateHasChanged();
+    }
+
+    private void Close() => _isOpen = false;
+
+    private async Task ConvertAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_countryCurrency))
+        {
+            _error = "Enter a country-currency, e.g. \"Canada-Dollar\".";
+            return;
+        }
+
+        _loading = true;
+        _error = null;
+        _result = null;
+        try
+        {
+            _result = await ApiClient.GetConvertedAsync(_purchaseId, _countryCurrency.Trim());
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _error = "Failed to retrieve conversion.";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

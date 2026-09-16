@@ -1,0 +1,88 @@
+@inject PurchasesStore Store
+
+@if (_isOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Purchase</h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <EditForm Model="_model" OnValidSubmit="SaveAsync">
+                    <DataAnnotationsValidator />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <InputText class="form-control" @bind-Value="_model.Description" maxlength="50" />
+                            <div class="form-text">@_model.Description.Length/50</div>
+                            <ValidationMessage For="() => _model.Description" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Transaction Date</label>
+                            <InputDate class="form-control" @bind-Value="_model.TransactionDate" />
+                            <ValidationMessage For="() => _model.TransactionDate" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Purchase Amount ($)</label>
+                            <InputNumber class="form-control" step="0.01" @bind-Value="_model.Amount" />
+                            <ValidationMessage For="() => _model.Amount" />
+                        </div>
+                        @if (_submitError is not null)
+                        {
+                            <div class="alert alert-danger py-2 mb-0">@_submitError</div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="Close">Close</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_submitting">
+                            @if (_submitting) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                            Save
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private PurchaseFormModel _model = new();
+    private bool _isOpen;
+    private bool _submitting;
+    private string? _submitError;
+
+    public void Show()
+    {
+        _model = new PurchaseFormModel();
+        _submitError = null;
+        _isOpen = true;
+        StateHasChanged();
+    }
+
+    private void Close() => _isOpen = false;
+
+    private async Task SaveAsync()
+    {
+        _submitting = true;
+        _submitError = null;
+        try
+        {
+            var request = new CreatePurchaseRequest(_model.Description.Trim(), _model.TransactionDate!.Value, _model.Amount!.Value);
+            await Store.CreateAsync(request);
+            _isOpen = false;
+        }
+        catch (ApiException ex)
+        {
+            _submitError = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _submitError = "Failed to reach the API.";
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}
