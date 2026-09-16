@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { usePurchasesStore } from '@/stores/purchases'
-import PurchaseDetailView from '../components/PurchaseDetail.vue'
+import PurchaseDetail from '../components/PurchaseDetail.vue'
 import NewPurchaseDialog from '../components/NewPurchaseDialog.vue'
 
 const store = usePurchasesStore()
@@ -64,7 +64,7 @@ function formatAmount(value: number) {
           <v-btn icon="mdi-close" variant="text" @click="closeDetails"></v-btn>
         </template>
         <v-card-text>
-          <PurchaseDetailView v-if="detailsDialogOpen" :id="selectedPurchaseId" />
+          <PurchaseDetail v-if="detailsDialogOpen" :id="selectedPurchaseId" />
         </v-card-text>
       </v-card>
     </v-dialog>

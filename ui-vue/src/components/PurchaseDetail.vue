@@ -21,7 +21,7 @@ const result = ref<PurchaseConversionResponse | null>(null)
 
 async function convert() {
   if (!countryCurrency.value.trim()) {
-    error.value = 'Enter a country-currency, e.g. "Canada-Dollar".'
+    error.value = 'Enter a country-currency, e.g. "Jamaica-Dollar".'
     return
   }
 
@@ -54,7 +54,7 @@ function formatDecimal(value: number) {
           <v-tooltip interactive>
             <template v-slot:activator="{ props: activatorProps }">
               <v-text-field v-model="countryCurrency" v-bind="activatorProps" label="What Country-Currency would you like to see?"
-                hint='Treasury API format, e.g. "Canada-Dollar"' persistent-hint variant="outlined">
+                hint='Treasury API format, e.g. "Jamaica-Dollar"' persistent-hint variant="outlined">
               </v-text-field>
             </template>
             <div class="suggestion-tooltip">

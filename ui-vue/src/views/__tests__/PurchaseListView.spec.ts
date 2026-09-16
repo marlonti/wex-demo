@@ -85,7 +85,7 @@ describe('PurchaseListView', () => {
 
     const wrapper = await mountView()
 
-    const viewDetailsLink = wrapper.findAll('a').find((a) => a.text().includes('View details'))
+    const viewDetailsLink = wrapper.findAll('a').find((a) => a.text().includes('View Converted Currency'))
     await viewDetailsLink?.trigger('click')
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()

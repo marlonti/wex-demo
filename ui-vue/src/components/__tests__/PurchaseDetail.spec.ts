@@ -14,13 +14,13 @@ vi.mock('@/api/purchases', async () => {
   }
 })
 
-import PurchaseDetailView from '@/components/PurchaseDetail.vue'
+import PurchaseDetail from '@/components/PurchaseDetail.vue'
 import { ApiError } from '@/api/purchases'
 
 const vuetify = createVuetify({ components, directives })
 
 function mountView(id = 'abc-123') {
-  return mount(PurchaseDetailView, {
+  return mount(PurchaseDetail, {
     props: { id },
     global: { plugins: [vuetify] },
     attachTo: document.body,
@@ -34,7 +34,7 @@ async function clickConvert(wrapper: ReturnType<typeof mountView>) {
   await wrapper.vm.$nextTick()
 }
 
-describe('PurchaseDetailView', () => {
+describe('PurchaseDetail', () => {
   beforeEach(() => {
     getPurchaseConvertedMock.mockReset()
   })
